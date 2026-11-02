@@ -1,9 +1,8 @@
 {
   "uuid": "lintel@topbar",
   "name": "Lintel",
-  "description": "Reworks the GNOME top bar into a macOS-Tahoe-style menu bar with a free-floating Notification Center while keeping the native GNOME Panel, notification model, accessibility and third-party status items intact. Non-destructive: disabling restores the stock top bar without a logout.",
+  "description": "适配 GNOME 51 的菜单栏、控制中心、通知中心与充电显示，配合洱海玻璃外观组件使用。",
   "shell-version": [
-    "50",
     "51"
   ],
   "session-modes": [
@@ -11,6 +10,6 @@
   ],
   "settings-schema": "org.gnome.shell.extensions.lintel",
   "gettext-domain": "lintel@topbar",
-  "url": "https://github.com/eliotBenitez/lintel",
-  "version-name": "0.17.2"
+  "url": "https://github.com/ErikaAlk/lintel",
+  "version-name": "0.17.2-erhai.1"
 }

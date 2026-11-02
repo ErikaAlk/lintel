@@ -1,246 +1,39 @@
-<div align="center">
+# Lintel 洱海改版
 
-<img src="icons/lintel.png" alt="Lintel logo" width="128">
+面向一加平板 2 Pro、Arch Linux ARM 与 GNOME Shell 51 的菜单栏改版，基于 [eliotBenitez/lintel](https://github.com/eliotBenitez/lintel) `ca84855fb8a096fe442f3367eb71ab4d1940747e`（0.17.2）。
 
-# Lintel
+## 功能
 
-**A macOS Tahoe–style menu bar for GNOME Shell — built on top of the native panel, not instead of it.**
+- 系统菜单、当前应用实际导出的菜单与侧面子菜单。
+- 触控控制中心、媒体播放、声音输出设备、日历与原生通知。
+- 横向电池图标、实时输入功率与充电动画；充电数据读取本机 qcom-battmgr 接口。
+- GNOME 51 亮度接口、中文界面与输入法指示，保留系统隐私指示器。
 
-[![GNOME Shell 50 | 51](https://img.shields.io/badge/GNOME%20Shell-50%20%7C%2051-4a86cf?logo=gnome&logoColor=white)](metadata.json)
-[![License: GPL-2.0-or-later](https://img.shields.io/badge/license-GPL--2.0--or--later-blue)](LICENSE)
-![Version 0.17.2](https://img.shields.io/badge/version-0.17.2-8a63d2)
+应用菜单取决于应用实际导出的 GMenuModel、D-Bus menu 或 GAction。充电显示面向本项目硬件，其他设备未验证。
 
-**English** · [Русский](README.ru.md)
+## 加载玻璃外观
 
-</div>
+本改版与 [Glasslight 洱海改版](https://github.com/ErikaAlk/glasslight)、Blur my Shell 77 和 `erhai-motion@erhai.local` 共同使用。完整安装、启用与停用命令见 [Arch 可选外观](https://github.com/ErikaAlk/onepluspad-2pro-Arch/blob/main/docs/APPEARANCE.zh-CN.md)。
 
----
+玻璃参数保存在 Arch 仓库的 `arch/appearance/`：原始桌面配置、连续圆角、GLSL 着色器、材质样式和加载顺序一起固定。已调参数包括饱和度 `1.05`、折射模糊半径 `14`、色散 `0.03`、高光强度 `0.10`、噪点 `0.025`、圆角平滑度 `0.6`。菜单、通知、控制中心和启动台共用这套材质。
 
-Lintel turns the GNOME top bar into a menu bar modeled on macOS Tahoe. You get a
-system menu, the focused app's name, separate Wi-Fi and battery menus, a Control
-Center, and a floating Notification Center with widgets.
+安装顺序为 Blur my Shell → Lintel → erhai-motion → Glasslight。更新 JavaScript 后需要退出 GNOME 并重新登录。
 
-It doesn't replace GNOME's `Panel`: it rearranges the panel's contents and puts
-everything back when you turn it off. Notifications, accessibility, work-area
-geometry and other extensions' status icons all keep working. **Disabling Lintel
-restores the stock top bar right away, with no need to log out.**
+## 单独打包
 
-## Screenshots
+需要 Bash、Python、gettext、glib2、zip、unzip、Potrace，以及 `tools/erhai-requirements.txt` 中固定版本的 Pillow 与 svgpathtools。在 Linux 中执行：
 
-![Lintel top bar](docs/screenshots/01-top-bar.png)
-
-| Control Center | Notification Center |
-|:---:|:---:|
-| <img src="docs/screenshots/02-control-center-detail.png" alt="Lintel Control Center" width="360"> | <img src="docs/screenshots/03-notification-center-detail.png" alt="Lintel Notification Center" width="360"> |
-
-<p align="center">
-  <img src="docs/screenshots/04-preferences-window.png" alt="Lintel preferences" width="720">
-  <br>
-  <sub>Live preferences for layout, clock, weather and appearance</sub>
-</p>
-
-## Features
-
-- **System menu.** A logo at the far left (you can change it) opens a compact
-  menu with About, Settings, App Center, Recent Items, Force Quit, Sleep,
-  Restart, Shut Down, Lock and Log Out. All of these use GNOME's own system
-  actions and confirmation dialogs.
-- **Active application name.** The focused app's name appears in bold next to
-  the logo. It updates smoothly as you Alt+Tab.
-- **macOS-style clock.** The date follows your locale's order, and the digits
-  are fixed-width so the bar doesn't shift every minute. Options match macOS:
-  show the date, day of the week, AM/PM and seconds.
-- **Notification Center.** Click the clock or press <kbd>Super</kbd>+<kbd>V</kbd>
-  to open a floating column of cards on the right. It uses GNOME's native
-  notification list, so grouping, actions, dismiss and Clear all work as usual.
-  Widgets: Calendar, Up Next, Weather, Screen Time, System (CPU/memory/network),
-  Battery, Now Playing and Clock. In Edit Widgets mode you can add, remove,
-  reorder and resize them.
-- **Control Center.** A popup in the Tahoe layout with:
-  - Wi-Fi, Bluetooth, Focus (Do Not Disturb) and Dark Mode toggles
-  - an AirDrop tile that opens your nearby file-sharing app (see
-    [Requirements](#requirements))
-  - Now Playing (MPRIS)
-  - Display and Sound sliders
-  - utility buttons
-
-  **Edit Controls** rearranges the popup in place: remove controls, add them
-  back, reorder them, and switch each one between a circle and a wide capsule.
-  Airplane Mode, Power Mode, Night Light and a Microphone slider are available
-  there too, off by default.
-  Controls your hardware lacks (Bluetooth, Wi-Fi on a wired PC, brightness on a
-  desktop monitor) are hidden and the rest move up to fill the gap. Toggles from
-  other extensions' Quick Settings also show up here. Caffeine gets a dedicated
-  adapter.
-- **Separate Wi-Fi and battery menus.** The Wi-Fi menu shows live networks, the
-  active connection and a radio switch. The battery menu shows charge, time
-  remaining, power source and power profiles.
-- **Notification banners on the right**, beneath the clock rather than centered.
-- **Appearance.** The bar can be transparent, translucent, solid or follow
-  GNOME. With automatic text color, it reads the wallpaper under the bar and
-  switches between light and dark text. Height, padding, spacing, font, corner
-  radius and hover/press effects are adjustable.
-- **Fullscreen reveal.** In a fullscreen app, push the pointer up against the
-  top edge and the bar slides in over the app. Just touching the edge does not
-  reveal it, so tabs and toolbars at the very top stay usable.
-- **Live preferences.** Every setting in the libadwaita preferences window
-  applies instantly, with no need to re-enable the extension.
-- **Translations:** English and Russian.
-
-## Requirements
-
-- **GNOME Shell 50** is the primary target; GNOME Shell 51 is supported as well.
-  Lintel is developed and tested on Wayland.
-- Optional, for specific widgets:
-  - *Weather:* Location Services (GeoClue) for automatic location. You can
-    enter a city instead. Forecasts come from keyless services (Open-Meteo or
-    wttr.in), so no API key is needed.
-  - *Up Next / Calendar events:* calendars in GNOME Calendar or Evolution Data
-    Server.
-  - *Screen Time:* GNOME Settings → Wellbeing with screen-time recording on.
-  - *App Center item:* any app registered for `appstream://` links, such as
-    GNOME Software.
-  - *AirDrop tile:* GNOME has no AirDrop, so the tile launches the first
-    installed nearby-sharing app, in this order:
-    [LocalSend](https://localsend.org) (native package or Flatpak),
-    [GSConnect](https://github.com/GSConnect/gnome-shell-extension-gsconnect),
-    [KDE Connect](https://kdeconnect.kde.org), then GNOME's Bluetooth file
-    transfer (`bluetooth-sendto`, only when a Bluetooth adapter is present). The
-    tile's second line names the app it will open. If none is installed, it
-    opens Settings → Sharing. LocalSend is the closest match: it works with
-    phones and computers on the same network, iPhone and Android included.
-
-## Installation
-
-### From a release
-
-1. Download `lintel@topbar.shell-extension.zip` from the
-   [Releases](../../releases) page.
-2. Install it:
-
-   ```bash
-   gnome-extensions install --force lintel@topbar.shell-extension.zip
-   ```
-
-3. Log out and back in. On Wayland, GNOME Shell only picks up new extensions
-   at login.
-4. Enable it:
-
-   ```bash
-   gnome-extensions enable lintel@topbar
-   ```
-
-### From source
-
-```bash
-git clone https://github.com/eliotBenitez/lintel.git
-cd lintel
-./install.sh          # compiles schema + translations, symlinks into ~/.local/share/gnome-shell/extensions
+```sh
+python -m venv .build/python
+.build/python/bin/pip install -r tools/erhai-requirements.txt
+. .build/python/bin/activate
+bash tools/package-erhai.sh "$PWD/.build/package"
 ```
 
-Log out and back in, then run `gnome-extensions enable lintel@topbar`.
+输出 `lintel-erhai.shell-extension.zip`。打包时从 Apple 官方资源地址下载图标参考，逐项检查 SHA256，再使用与本机相同的透明轮廓和 Potrace 参数生成 SVG；这些第三方资源没有放进本仓库。OPPO Sans 字体由使用者从官方渠道获取并遵守其许可。
 
-`install.sh` needs `glib-compile-schemas` and `msgfmt` (gettext).
+## 验证与许可证
 
-## Usage
+改版曾在本机 GNOME 51.1 上完成菜单、真实媒体操作、亮度与音量、日历、触控切换和启停验证；其他机器与桌面版本未验证。公开打包验证与机器上的历史运行验证分别记录在配套 Arch 仓库。
 
-| Action | How |
-|---|---|
-| Open the Notification Center | Click the clock, or press <kbd>Super</kbd>+<kbd>V</kbd> |
-| Edit Notification Center widgets | Open it and choose **Edit Widgets** |
-| Open the Control Center | Click the Control Center icon just left of the clock |
-| Open preferences | `gnome-extensions prefs lintel@topbar`, or use the Extensions app |
-| Show the bar in fullscreen | Push the pointer up against the top edge of the screen |
-
-The preferences window has four pages: **Layout**, **Clock**, **Weather** and
-**Appearance**. Every setting is also a GSettings key, so you can script it:
-
-```bash
-gsettings set org.gnome.shell.extensions.lintel appearance translucent
-gsettings list-recursively org.gnome.shell.extensions.lintel
-```
-
-### Native Quick Settings mode
-
-If you'd rather keep GNOME's own Quick Settings menu, turn off the custom
-Control Center:
-
-```bash
-gsettings set org.gnome.shell.extensions.lintel control-center-mode native
-```
-
-## Compatibility with other extensions
-
-Lintel keeps GNOME's `statusArea`, `menuManager` and Quick Settings intact, so
-other extensions' indicators stay put. Their Quick Settings toggles appear as
-buttons in the Control Center. Tiles the Control Center can't show, such as
-sliders and custom widgets, stay in GNOME's native Quick Settings, which is
-still available whenever they're present.
-
-## Uninstall
-
-```bash
-gnome-extensions disable lintel@topbar
-gnome-extensions uninstall lintel@topbar
-```
-
-Disabling alone restores the stock top bar. To reset every Lintel setting:
-
-```bash
-dconf reset -f /org/gnome/shell/extensions/lintel/
-```
-
-## Development
-
-```bash
-./install.sh                                   # symlink the checkout into your extensions dir
-dbus-run-session -- gnome-shell --nested --wayland   # isolated nested test shell
-journalctl --user -f -o cat /usr/bin/gnome-shell     # watch for GJS errors
-tools/check-undefined-calls.py                 # static check for calls to deleted/undeclared helpers
-tools/update-translations.sh                   # regenerate the .pot and merge .po files
-tools/package.sh                               # build dist/lintel@topbar.shell-extension.zip
-tools/capture-screenshots.sh                   # rebuild the reproducible GNOME Shell gallery
-```
-
-GNOME Shell caches extension modules, so after editing `.js` files you'll
-usually need to log in again (or use a nested shell) to see the changes.
-
-Where to look next:
-
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): design, module layout and the
-  "never replace `Main.panel`" rule.
-- [`docs/IMPLEMENTATION.md`](docs/IMPLEMENTATION.md): per-subsystem status and
-  the full manual test checklist.
-- [`docs/TESTING.md`](docs/TESTING.md): live-session test protocol, including
-  the 20-cycle enable/disable stress test.
-- [`docs/DECISIONS.md`](docs/DECISIONS.md) and
-  [`docs/PROJECT_MEMORY.md`](docs/PROJECT_MEMORY.md): architecture decisions and
-  GNOME Shell quirks we've found.
-- [`AGENTS.md`](AGENTS.md): coding style and contribution guidelines.
-
-### Contributing
-
-Issues and pull requests are welcome. In a pull request, please describe:
-
-- the user-visible change
-- which GNOME versions you tested on
-- your manual test results, including whether disabling still restores the
-  stock panel
-
-For visual changes, add screenshots.
-
-### Translations
-
-Translations live in [`po/`](po). To add a language, copy `po/lintel@topbar.pot`
-to `po/<lang>.po`, translate it, and run `tools/update-translations.sh`.
-
-## License
-
-Lintel is free software, released under the
-[GNU General Public License v2.0 or later](LICENSE).
-
----
-
-<sub>Lintel is an independent project and is not affiliated with or endorsed by
-Apple Inc. macOS and macOS Tahoe are trademarks of Apple Inc., used here only to
-describe the design reference.</sub>
+上游 Lintel 使用 GPL-2.0-or-later，见 [LICENSE](LICENSE)。`menuSources.js` 与 `cascade.js` 的来源为 [TPCT Mac](https://github.com/TPCT/tpct-mac-theme) `4407330a30f9dcb6e5538553e57bdf48518e6892`，保留 [LICENSE-menuSources](LICENSE-menuSources)；本项目入口、菜单与集成文件按各文件 GPL-3.0-or-later 声明分发。
