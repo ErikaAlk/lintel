@@ -1,0 +1,665 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Lintel 0.17.2\n"
+"PO-Revision-Date: 2026-10-31 06:00-0700\n"
+"Last-Translator: Erika\n"
+"Language-Team: 简体中文\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Pick an emoji"
+msgstr "选择表情符号"
+
+msgid "Use the distro / GNOME logo"
+msgstr "使用发行版或 GNOME 标志"
+
+msgid "Quick symbols"
+msgstr "常用符号"
+
+msgid "Layout"
+msgstr "布局"
+
+msgid "Panel"
+msgstr "菜单栏"
+
+msgid "Hide Activities"
+msgstr "隐藏活动入口"
+
+msgid "Hide the workspace / Activities indicator"
+msgstr "隐藏工作区和活动指示器"
+
+msgid "Clock on the right"
+msgstr "时钟位于右侧"
+
+msgid "Move the clock to the far right, macOS-style"
+msgstr "将时钟移到菜单栏最右侧"
+
+msgid "Reveal in full screen"
+msgstr "全屏时显示菜单栏"
+
+msgid "Push the pointer against the top edge to show the panel temporarily"
+msgstr "将指针推向屏幕顶部，临时显示菜单栏"
+
+msgid "Notification Center"
+msgstr "通知中心"
+
+msgid "Widgets are added, removed, reordered and resized from Edit Widgets inside Notification Center."
+msgstr "在通知中心选择“编辑小组件”，即可添加、移除、排序和调整大小。"
+
+msgid "Tahoe Notification Center"
+msgstr "Tahoe 通知中心"
+
+msgid "Open notifications and widgets when the clock or Super+V is pressed"
+msgstr "点击时钟或按下 Super+V 时打开通知和小组件"
+
+msgid "System menu"
+msgstr "系统菜单"
+
+msgid "Show system menu"
+msgstr "显示系统菜单"
+
+msgid "The left-hand Apple-style logo menu"
+msgstr "左侧标志菜单"
+
+msgid "Logo icon"
+msgstr "标志图标"
+
+msgid "Emoji or symbol; empty = your distribution’s logo"
+msgstr "输入表情或符号；留空使用发行版标志"
+
+msgid "Custom icon name / path"
+msgstr "自定义图标名称或路径"
+
+msgid "Advanced: an icon-theme name (e.g. start-here-symbolic) or file path"
+msgstr "输入主题图标名称（例如 start-here-symbolic）或文件路径"
+
+msgid "Active application"
+msgstr "当前应用"
+
+msgid "Show app name"
+msgstr "显示应用名称"
+
+msgid "Bold name of the focused application"
+msgstr "以粗体显示当前应用名称"
+
+msgid "Label when idle"
+msgstr "桌面名称"
+
+msgid "Shown when nothing is focused; empty = hide"
+msgstr "没有当前应用时显示；留空隐藏"
+
+msgid "Control Center"
+msgstr "控制中心"
+
+msgid "Mode"
+msgstr "模式"
+
+msgid "Custom popup (replaces Quick Settings)"
+msgstr "自定义控制中心"
+
+msgid "Open native Quick Settings"
+msgstr "系统快捷设置"
+
+msgid "Custom adds three independent menu-bar items and hides native Quick Settings"
+msgstr "自定义模式分别显示无线网络、电池和控制中心菜单"
+
+msgid "Clock"
+msgstr "时钟"
+
+msgid "Clock format"
+msgstr "时钟格式"
+
+msgid "12-hour / 24-hour follows the system setting."
+msgstr "12 小时制和 24 小时制跟随系统设置。"
+
+msgid "Show date"
+msgstr "显示日期"
+
+msgid "When space allows"
+msgstr "空间充足时"
+
+msgid "Always"
+msgstr "始终显示"
+
+msgid "Never"
+msgstr "始终隐藏"
+
+msgid "When space allows: the date is dropped once the bar runs out of room"
+msgstr "空间不足时隐藏日期"
+
+msgid "Show the day of the week"
+msgstr "显示星期"
+
+msgid "Show AM/PM"
+msgstr "显示上午和下午"
+
+msgid "Only applies while the system uses a 12-hour clock"
+msgstr "仅适用于系统使用 12 小时制时"
+
+msgid "Show seconds"
+msgstr "显示秒数"
+
+msgid "Weather"
+msgstr "天气"
+
+msgid "Weather widget"
+msgstr "天气小组件"
+
+msgid "Both services are free and need no account. The location’s coordinates are sent to the one selected."
+msgstr "两项服务均免费，无需账户。所选服务将接收位置坐标。"
+
+msgid "Service"
+msgstr "服务"
+
+msgid "Open-Meteo forecasts every hour, wttr.in every three hours"
+msgstr "Open-Meteo 每小时更新，wttr.in 每三小时更新"
+
+msgid "Temperature"
+msgstr "温度"
+
+msgid "Follow region"
+msgstr "跟随地区"
+
+msgid "Celsius"
+msgstr "摄氏度"
+
+msgid "Fahrenheit"
+msgstr "华氏度"
+
+msgid "Location"
+msgstr "位置"
+
+msgid "Current location"
+msgstr "当前位置"
+
+msgid "Chosen city"
+msgstr "指定城市"
+
+msgid "Location Services"
+msgstr "定位服务"
+
+msgid "Open Settings"
+msgstr "打开设置"
+
+msgid "City"
+msgstr "城市"
+
+msgid "Search for a city"
+msgstr "搜索城市"
+
+msgid "On — the city below is used only if locating fails"
+msgstr "定位服务已开启，定位失败时使用下方城市"
+
+msgid "Off — the city below is used instead"
+msgstr "定位服务已关闭，使用下方城市"
+
+msgid "None chosen"
+msgstr "尚未选择"
+
+msgid "No cities found"
+msgstr "没有找到城市"
+
+msgid "Search failed"
+msgstr "搜索失败"
+
+msgid "Appearance"
+msgstr "外观"
+
+msgid "Style"
+msgstr "样式"
+
+msgid "Background"
+msgstr "背景"
+
+msgid "Transparent (Tahoe)"
+msgstr "透明（Tahoe）"
+
+msgid "Translucent"
+msgstr "半透明"
+
+msgid "Solid"
+msgstr "纯色"
+
+msgid "Follow GNOME theme"
+msgstr "跟随 GNOME 主题"
+
+msgid "Text colour"
+msgstr "文字颜色"
+
+msgid "Automatic (background-aware)"
+msgstr "根据背景自动调整"
+
+msgid "Light"
+msgstr "浅色"
+
+msgid "Dark"
+msgstr "深色"
+
+msgid "In the Overview"
+msgstr "概览中的样式"
+
+msgid "Transparent"
+msgstr "透明"
+
+msgid "Keep Lintel bar"
+msgstr "保持菜单栏样式"
+
+msgid "Native GNOME"
+msgstr "GNOME 默认样式"
+
+msgid "Background on open"
+msgstr "展开时显示背景"
+
+msgid "Rounded wash while a button is open"
+msgstr "菜单展开时显示圆角背景"
+
+msgid "Metrics"
+msgstr "尺寸"
+
+msgid "Panel height"
+msgstr "菜单栏高度"
+
+msgid "0 = theme default"
+msgstr "0 表示使用主题默认值"
+
+msgid "Button padding"
+msgstr "按钮内边距"
+
+msgid "Default 10; -1 = inherit"
+msgstr "默认 10；-1 表示跟随主题"
+
+msgid "Item spacing"
+msgstr "项目间距"
+
+msgid "Default 0; -1 = inherit"
+msgstr "默认 0；-1 表示跟随主题"
+
+msgid "Corner radius"
+msgstr "圆角半径"
+
+msgid "High = pill"
+msgstr "较大数值显示为胶囊形状"
+
+msgid "Transition (ms)"
+msgstr "过渡时间（毫秒）"
+
+msgid "Font"
+msgstr "字体"
+
+msgid "Family"
+msgstr "字体名称"
+
+msgid "One font family name; empty = Cantarell"
+msgstr "输入一种字体名称；留空使用 Cantarell"
+
+msgid "Weight"
+msgstr "字重"
+
+msgid "e.g. normal, bold, 600; empty = inherit"
+msgstr "例如 normal、bold、600；留空跟随主题"
+
+msgid "Size (pt)"
+msgstr "字号（磅）"
+
+msgid "0 = inherit; 10.5pt = macOS’s 14px"
+msgstr "0 表示跟随主题；10.5 磅对应 14 像素"
+
+msgid "Hover / press"
+msgstr "悬停与按下"
+
+msgid "Hover opacity"
+msgstr "悬停不透明度"
+
+msgid "Active opacity"
+msgstr "按下不透明度"
+
+msgid "On"
+msgstr "已开启"
+
+msgid "Off"
+msgstr "已关闭"
+
+msgid "Charging"
+msgstr "正在充电"
+
+msgid "On Battery"
+msgstr "使用电池"
+
+msgid "Empty"
+msgstr "电量耗尽"
+
+msgid "Fully Charged"
+msgstr "电量已充满"
+
+msgid "Not Charging"
+msgstr "未在充电"
+
+msgid "Battery"
+msgstr "电池"
+
+msgid "Power Adapter"
+msgstr "电源适配器"
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d 小时"
+
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d 分钟"
+
+msgid "%s until full"
+msgstr "%s 后充满"
+
+msgid "%s remaining"
+msgstr "剩余 %s"
+
+msgid "Not Playing"
+msgstr "未在播放"
+
+msgid "Power Saver"
+msgstr "节能模式"
+
+msgid "Balanced"
+msgstr "平衡模式"
+
+msgid "High Performance"
+msgstr "高性能模式"
+
+msgid "Custom"
+msgstr "自定义"
+
+msgctxt "power profile, short"
+msgid "Saver"
+msgstr "节能"
+
+msgctxt "power profile, short"
+msgid "Balanced"
+msgstr "平衡"
+
+msgctxt "power profile, short"
+msgid "Performance"
+msgstr "性能"
+
+msgctxt "power profile, short"
+msgid "Custom"
+msgstr "自定义"
+
+msgid "Clear"
+msgstr "晴朗"
+
+msgid "Mostly Clear"
+msgstr "晴间多云"
+
+msgid "Partly Cloudy"
+msgstr "局部多云"
+
+msgid "Cloudy"
+msgstr "多云"
+
+msgid "Fog"
+msgstr "雾天"
+
+msgid "Drizzle"
+msgstr "毛毛细雨"
+
+msgid "Showers"
+msgstr "阵雨"
+
+msgid "Rain"
+msgstr "降雨"
+
+msgid "Heavy Rain"
+msgstr "大雨"
+
+msgid "Freezing Rain"
+msgstr "冻雨"
+
+msgid "Sleet"
+msgstr "雨夹雪"
+
+msgid "Snow"
+msgstr "降雪"
+
+msgid "Heavy Snow"
+msgstr "大雪"
+
+msgid "Thunderstorm"
+msgstr "雷暴"
+
+msgid "Active Application"
+msgstr "当前应用"
+
+msgid "Desktop"
+msgstr "桌面"
+
+msgid "Power Mode"
+msgstr "电源模式"
+
+msgid "Battery Settings…"
+msgstr "电池设置…"
+
+msgid "Battery, %s, %s"
+msgstr "电池，%s，%s"
+
+msgid "Battery, %s, %s, %s"
+msgstr "电池，%s，%s，%s"
+
+msgid "Fast Charging"
+msgstr "正在快充"
+
+msgid "Super Fast Charging"
+msgstr "正在超级快充"
+
+msgid "Input Power"
+msgstr "输入功率"
+
+msgid "Adapter"
+msgstr "充电器"
+
+msgid "Into Battery"
+msgstr "充入电池"
+
+msgid "Power Source: %s"
+msgstr "供电来源：%s"
+
+msgid "Now Playing"
+msgstr "正在播放"
+
+msgid "Previous"
+msgstr "上一首"
+
+msgid "Play"
+msgstr "播放"
+
+msgid "Pause"
+msgstr "暂停"
+
+msgid "Next"
+msgstr "下一首"
+
+msgid "Toggle %s"
+msgstr "切换%s"
+
+msgid "%s level"
+msgstr "%s大小"
+
+msgid "Wi-Fi"
+msgstr "无线网络"
+
+msgid "Bluetooth"
+msgstr "蓝牙"
+
+msgid "Stage Manager"
+msgstr "窗口概览"
+
+msgid "Screen Mirroring"
+msgstr "显示设置"
+
+msgid "Dark Mode"
+msgstr "深色模式"
+
+msgid "Screenshot"
+msgstr "屏幕截图"
+
+msgid "Focus"
+msgstr "专注模式"
+
+msgid "Display"
+msgstr "显示亮度"
+
+msgid "Sound"
+msgstr "声音"
+
+msgid "Edit Controls"
+msgstr "编辑控制项目"
+
+msgid "Remove %s"
+msgstr "移除%s"
+
+msgid "Done"
+msgstr "完成"
+
+msgid "Move %s earlier"
+msgstr "将%s向前移动"
+
+msgid "Move %s later"
+msgstr "将%s向后移动"
+
+msgid "Change %s size"
+msgstr "调整%s大小"
+
+msgid "Add Controls"
+msgstr "添加控制项目"
+
+msgid "Add %s"
+msgstr "添加%s"
+
+msgid "Updating…"
+msgstr "正在更新…"
+
+msgid "Finding your location…"
+msgstr "正在确定位置…"
+
+msgid "Choose a city in Lintel settings"
+msgstr "在菜单栏设置中选择城市"
+
+msgid "Location Services are off. Choose a city in settings"
+msgstr "定位服务已关闭，请在设置中选择城市"
+
+msgid "Location unavailable. Choose a city in settings"
+msgstr "无法确定位置，请在设置中选择城市"
+
+msgid "Weather is unavailable right now"
+msgstr "目前无法获取天气"
+
+msgid "Calendar"
+msgstr "日历"
+
+msgid "Up Next"
+msgstr "接下来"
+
+msgid "Screen Time"
+msgstr "屏幕使用时间"
+
+msgid "System"
+msgstr "系统"
+
+msgctxt "widget size"
+msgid "S"
+msgstr "小型"
+
+msgctxt "widget size"
+msgid "M"
+msgstr "中型"
+
+msgctxt "widget size"
+msgid "L"
+msgstr "大型"
+
+msgid "Clear all notifications"
+msgstr "清除全部通知"
+
+msgid "Edit Widgets"
+msgstr "编辑小组件"
+
+msgid "Move %s up"
+msgstr "将%s向上移动"
+
+msgid "Move %s down"
+msgstr "将%s向下移动"
+
+msgid "Change %s widget size"
+msgstr "调整%s小组件大小"
+
+msgid "Add Widgets"
+msgstr "添加小组件"
+
+msgid "Lintel System Menu"
+msgstr "系统菜单"
+
+msgid "About This System"
+msgstr "关于本机"
+
+msgid "System Settings…"
+msgstr "系统设置…"
+
+msgid "App Center…"
+msgstr "应用中心…"
+
+msgid "Recent Items"
+msgstr "最近使用的项目"
+
+msgid "Open Recent Items…"
+msgstr "打开最近使用的项目…"
+
+msgid "Force Quit…"
+msgstr "强制退出…"
+
+msgid "Sleep"
+msgstr "睡眠"
+
+msgid "Restart…"
+msgstr "重新启动…"
+
+msgid "Shut Down…"
+msgstr "关机…"
+
+msgid "Lock Screen"
+msgstr "锁定屏幕"
+
+msgid "Log Out %s…"
+msgstr "退出登录 %s…"
+
+msgid "Networks"
+msgstr "附近网络"
+
+msgid "Wi-Fi Settings…"
+msgstr "无线网络设置…"
+
+msgid "Wi-Fi, connected to %s"
+msgstr "无线网络，已连接到 %s"
+
+msgid "Wi-Fi, %s"
+msgstr "无线网络，%s"
+
+msgid "not connected"
+msgstr "尚未连接"
+
+msgid "off"
+msgstr "已关闭"
+
+msgid "Unavailable"
+msgstr "不可用"
+
+msgid "Searching for networks…"
+msgstr "正在搜索网络…"
+
+msgid "Disconnect from %s"
+msgstr "断开 %s"
+
+msgid "Connect to %s"
+msgstr "连接到 %s"

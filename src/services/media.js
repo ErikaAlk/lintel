@@ -1,160 +1,119 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-//
-// Minimal MPRIS player bridge for the Control Center Now Playing card.
-
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
-
 import {_} from '../i18n.js';
 
-const MPRIS_PREFIX = 'org.mpris.MediaPlayer2.';
-const PLAYER_PATH = '/org/mpris/MediaPlayer2';
-const PLAYER_IFACE = 'org.mpris.MediaPlayer2.Player';
-const PLAYER_XML = `
-<node><interface name="${PLAYER_IFACE}">
-  <method name="Previous"/>
-  <method name="PlayPause"/>
-  <method name="Next"/>
-  <property name="PlaybackStatus" type="s" access="read"/>
-  <property name="Metadata" type="a{sv}" access="read"/>
-</interface></node>`;
+const PREFIX = 'org.mpris.MediaPlayer2.';
+const PATH = '/org/mpris/MediaPlayer2';
+const IFACE = 'org.mpris.MediaPlayer2.Player';
 
-const PlayerProxy = Gio.DBusProxy.makeProxyWrapper(PLAYER_XML);
-
-export const MediaService = GObject.registerClass({
-    Signals: {'changed': {}},
-}, class MediaService extends GObject.Object {
+export const MediaService = GObject.registerClass({Signals: {changed: {}}},
+class MediaService extends GObject.Object {
     _init() {
         super._init();
+        this._players = new Map();
+        this._pending = new Map();
+        this._sequence = 0;
         this._destroyed = false;
-        this._proxy = null;
-        this._proxyId = 0;
-        this._playerName = '';
-        this._watchId = Gio.DBus.session.signal_subscribe(
-            'org.freedesktop.DBus',
-            'org.freedesktop.DBus',
-            'NameOwnerChanged',
-            '/org/freedesktop/DBus',
-            null,
-            Gio.DBusSignalFlags.NONE,
-            (_connection, _sender, _path, _iface, _signal, parameters) => {
-                const [name] = parameters.deep_unpack();
-                if (name.startsWith(MPRIS_PREFIX))
-                    this._discover();
-            });
-        this._discover();
-    }
-
-    _discover() {
-        Gio.DBus.session.call(
-            'org.freedesktop.DBus',
-            '/org/freedesktop/DBus',
-            'org.freedesktop.DBus',
-            'ListNames',
-            null,
-            new GLib.VariantType('(as)'),
-            Gio.DBusCallFlags.NONE,
-            -1,
-            null,
-            (connection, result) => {
-                if (this._destroyed)
+        this._watchId = Gio.DBus.session.signal_subscribe('org.freedesktop.DBus',
+            'org.freedesktop.DBus', 'NameOwnerChanged', '/org/freedesktop/DBus',
+            null, Gio.DBusSignalFlags.NONE, (_connection, _sender, _path, _iface, _signal, params) => {
+                const [name, oldOwner, newOwner] = params.deep_unpack();
+                if (!name.startsWith(PREFIX))
                     return;
-                try {
-                    const [names] = connection.call_finish(result).deep_unpack();
-                    const playerName = names.find(name =>
-                        name.startsWith(MPRIS_PREFIX)) ?? '';
-                    if (playerName === this._playerName)
-                        return;
-                    this._bind(playerName);
-                } catch (e) {
-                    logError(e, 'lintel: discover MPRIS player');
-                }
+                if (oldOwner)
+                    this._remove(name);
+                if (newOwner)
+                    this._add(name);
+            });
+        Gio.DBus.session.call('org.freedesktop.DBus', '/org/freedesktop/DBus',
+            'org.freedesktop.DBus', 'ListNames', null, new GLib.VariantType('(as)'),
+            Gio.DBusCallFlags.NONE, -1, null, (connection, result) => {
+                const [names] = connection.call_finish(result).deep_unpack();
+                if (!this._destroyed)
+                    names.filter(name => name.startsWith(PREFIX)).forEach(name => this._add(name));
             });
     }
 
-    _bind(playerName) {
-        if (this._proxyId && this._proxy)
-            this._proxy.disconnect(this._proxyId);
-        this._proxyId = 0;
-        this._proxy = null;
-        this._playerName = playerName;
-
-        if (!playerName) {
-            this.emit('changed');
+    _add(name) {
+        if (this._players.has(name) || this._pending.has(name))
             return;
-        }
-
-        new PlayerProxy(Gio.DBus.session, playerName, PLAYER_PATH,
-            (proxy, error) => {
-                if (this._destroyed || playerName !== this._playerName)
+        const cancellable = new Gio.Cancellable();
+        this._pending.set(name, cancellable);
+        Gio.DBusProxy.new(Gio.DBus.session, Gio.DBusProxyFlags.DO_NOT_AUTO_START,
+            null, name, PATH, IFACE, cancellable, (_source, result) => {
+                if (cancellable.is_cancelled())
                     return;
-                if (error) {
-                    this._bind('');
+                const proxy = Gio.DBusProxy.new_finish(result);
+                this._pending.delete(name);
+                if (!proxy.g_name_owner)
                     return;
-                }
-                this._proxy = proxy;
-                this._proxyId = proxy.connect(
-                    'g-properties-changed', () => this.emit('changed'));
+                const entry = {proxy, sequence: ++this._sequence};
+                entry.signal = proxy.connect('g-properties-changed', () => {
+                    entry.sequence = ++this._sequence;
+                    this.emit('changed');
+                });
+                this._players.set(name, entry);
                 this.emit('changed');
             });
     }
 
-    get available() {
-        return this._proxy != null;
+    _remove(name) {
+        this._pending.get(name)?.cancel();
+        this._pending.delete(name);
+        const entry = this._players.get(name);
+        if (entry)
+            entry.proxy.disconnect(entry.signal);
+        this._players.delete(name);
+        this.emit('changed');
     }
 
-    get playing() {
-        return this._proxy?.PlaybackStatus === 'Playing';
+    get _proxy() {
+        return [...this._players.values()].sort((first, second) =>
+            Number(value(second.proxy, 'PlaybackStatus') === 'Playing')
+            - Number(value(first.proxy, 'PlaybackStatus') === 'Playing')
+            || second.sequence - first.sequence)[0]?.proxy;
     }
 
-    get title() {
-        return _metadataValue(this._proxy?.Metadata, 'xesam:title') ||
-            _('Not Playing');
+    get available() { return Boolean(this._proxy); }
+    get playing() { return value(this._proxy, 'PlaybackStatus') === 'Playing'; }
+    get title() { return value(this._proxy, 'Metadata')?.['xesam:title'] || _('Not Playing'); }
+    get artist() { return (value(this._proxy, 'Metadata')?.['xesam:artist'] ?? []).join(', '); }
+    get artUrl() { return value(this._proxy, 'Metadata')?.['mpris:artUrl'] ?? ''; }
+    get capabilities() {
+        const proxy = this._proxy;
+        const control = value(proxy, 'CanControl') === true;
+        return {
+            previous: control && value(proxy, 'CanGoPrevious') === true,
+            'play-pause': control && value(proxy, this.playing ? 'CanPause' : 'CanPlay') === true,
+            next: control && value(proxy, 'CanGoNext') === true,
+        };
     }
 
-    get artist() {
-        const value = _metadataValue(this._proxy?.Metadata, 'xesam:artist');
-        return Array.isArray(value) ? value.join(', ') : value || '';
+    _call(method, capability) {
+        const proxy = this._proxy;
+        if (!this.capabilities[capability])
+            return;
+        proxy.call(method, null, Gio.DBusCallFlags.NONE, -1, null, (source, result) =>
+            source.call_finish(result));
     }
-
-    get artUrl() {
-        return _metadataValue(this._proxy?.Metadata, 'mpris:artUrl') || '';
-    }
-
-    previous() {
-        this._proxy?.PreviousRemote(_finishCall);
-    }
-
-    playPause() {
-        this._proxy?.PlayPauseRemote(_finishCall);
-    }
-
-    next() {
-        this._proxy?.NextRemote(_finishCall);
-    }
+    previous() { this._call('Previous', 'previous'); }
+    playPause() { this._call('PlayPause', 'play-pause'); }
+    next() { this._call('Next', 'next'); }
 
     destroy() {
         this._destroyed = true;
-        if (this._proxyId && this._proxy)
-            this._proxy.disconnect(this._proxyId);
-        if (this._watchId)
-            Gio.DBus.session.signal_unsubscribe(this._watchId);
-        this._proxyId = 0;
-        this._watchId = 0;
-        this._proxy = null;
-        this._playerName = '';
+        Gio.DBus.session.signal_unsubscribe(this._watchId);
+        for (const cancellable of this._pending.values())
+            cancellable.cancel();
+        this._pending.clear();
+        for (const entry of this._players.values())
+            entry.proxy.disconnect(entry.signal);
+        this._players.clear();
     }
 });
 
-function _metadataValue(metadata, key) {
-    let value = metadata?.[key];
-    while (value instanceof GLib.Variant)
-        value = value.deep_unpack();
-    return value;
-}
-
-function _finishCall(_result, error) {
-    if (error)
-        logError(error, 'lintel: MPRIS command');
+function value(proxy, name) {
+    return proxy?.get_cached_property(name)?.recursiveUnpack();
 }

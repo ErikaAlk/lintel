@@ -23,9 +23,13 @@
 
 #panel.lintel .panel-button {
     background-color: transparent;
-    border: 2px solid transparent !important;
+    border: 0 solid transparent !important;
     border-radius: 99px;
     transition-duration: 120ms;
+    -natural-hpadding: 8px !important;
+    -minimum-hpadding: 8px !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 #panel.lintel .panel-button:hover {
@@ -66,6 +70,7 @@
 
 #panel.lintel #panelRight {
     padding-right: 8px;
+    spacing: 0;
 }
 
 /* Fixed-size, code-rendered Tahoe sliders glyph. Its paint color is inherited
@@ -314,9 +319,20 @@
 }
 
 .lintel-battery-summary-time,
-.lintel-status-menu-content .lintel-battery-source {
+.lintel-status-menu-content .lintel-battery-source,
+.lintel-status-menu-content .lintel-battery-detail,
+.lintel-status-menu-content .lintel-battery-detail-value {
     color: rgba(42, 49, 57, 0.62);
     font-size: 8.25pt;
+}
+
+.lintel-battery-power {
+    margin-right: 5px;
+    font-feature-settings: "tnum";
+}
+
+.lintel-status-menu-content .lintel-battery-detail-value {
+    font-feature-settings: "tnum";
 }
 
 /* ── macOS Tahoe Control Center ───────────────────────────────────────── */
@@ -352,22 +368,22 @@
  * subtract padding from. Measured on a render: width 308 produced 308.4px of
  * module. 140 + 12 gutter + 140 = 292, so the grid columns fill it exactly. */
 .lintel-cc-content {
-    spacing: 8px;
+    spacing: 12px;
     padding: 8px;
     width: 292px;
 }
 
 /* Module grid (src/widgets/ccGrid.js): four cells per row in two halves.
- * 62 + 16 pair gap + 62 = 140 per half, 140 + 12 gutter + 140 = 292. The cell
+ * 64 + 12 pair gap + 64 = 140 per half, 140 + 12 gutter + 140 = 292. The cell
  * width is derived from the content width, so only the gaps are declared. */
 .lintel-cc-grid {
     -lintel-grid-gutter: 12px;
-    -lintel-grid-pair-gap: 16px;
-    -lintel-grid-row-gap: 8px;
+    -lintel-grid-pair-gap: 12px;
+    -lintel-grid-row-gap: 12px;
 }
 
 .lintel-cc-sliders {
-    spacing: 8px;
+    spacing: 12px;
 }
 
 /* Connectivity and Focus capsules.
@@ -379,10 +395,10 @@
  * why ink lines read straight through the labels. Secondary text moved to 85%
  * white for the same reason: on the new plate it needs 81% to clear 4.5. */
 .lintel-cc-tile {
-    min-height: 52px;
+    min-height: 50px;
     background-color: rgba(35, 41, 48, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 22px;
+    border-radius: 999px;
     padding: 6px 9px;
     box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.18);
     transition-duration: 160ms;
@@ -403,9 +419,7 @@
     background-color: rgba(60, 68, 77, 0.84);
 }
 
-/* An enabled toggle turns the WHOLE capsule blue in the reference — Wi-Fi,
- * Bluetooth and AirDrop are all solid blue there while Focus, being off, stays
- * neutral. Only the icon disc was being tinted before. */
+/* 玻璃样式按参考图分别绘制胶囊和圆形按钮的选中底色。 */
 .lintel-cc-tile:checked {
     background-color: #0a84ff;
     border-color: rgba(255, 255, 255, 0.28);
@@ -420,7 +434,7 @@
 }
 
 .lintel-cc-tile-icon {
-    icon-size: 16px;
+    icon-size: 20px;
     color: rgba(255, 255, 255, 0.96);
     background-color: rgba(255, 255, 255, 0.16);
     border: 1px solid rgba(255, 255, 255, 0.10);
@@ -461,25 +475,26 @@
 /* Artwork and metadata form one compact header; transport controls remain a
  * separate, evenly distributed row like Tahoe's Now Playing module. */
 .lintel-cc-media {
-    height: 118px;
+    min-height: 114px;
     background-color: rgba(35, 41, 48, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 24px;
-    padding: 10px;
-    spacing: 8px;
+    padding: 12px;
+    spacing: 6px;
     box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.18);
 }
 
 .lintel-cc-media-header {
-    spacing: 9px;
+    spacing: 0;
 }
 
 .lintel-cc-media-metadata {
     spacing: 1px;
+    min-width: 0;
 }
 
 .lintel-cc-media-artwork {
-    icon-size: 24px;
+    icon-size: 30px;
     width: 36px;
     height: 36px;
     background-color: rgba(255, 255, 255, 0.12);
@@ -501,10 +516,40 @@
 
 .lintel-cc-media-controls {
     spacing: 3px;
+    margin-top: 2px;
+}
+
+.lintel-cc-output-button {
+    border-radius: 999px;
+    width: 22px;
+    height: 22px;
+    background-color: rgba(255,255,255,0.16);
+    color: white;
+    padding: 0;
+}
+
+.lintel-cc-output-page {
+    width: 292px;
+    padding: 14px;
+    spacing: 8px;
+    background-color: rgba(20,24,30,0.28);
+    border-radius: 24px;
+}
+
+.lintel-cc-output-back,
+.lintel-cc-output-device {
+    text-align: left;
+    padding: 10px;
+    border-radius: 12px;
+    color: white;
+}
+
+.lintel-cc-output-device:hover {
+    background-color: rgba(255,255,255,0.16);
 }
 
 .lintel-cc-media-control {
-    icon-size: 16px;
+    icon-size: 22px;
     color: rgba(255, 255, 255, 0.92);
 }
 
@@ -515,7 +560,7 @@
 }
 
 .lintel-cc-media-play {
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: transparent;
 }
 
 .lintel-cc-media-button:hover {
@@ -536,13 +581,23 @@
     border-radius: 999px;
 }
 
+.lintel-cc-tile.lintel-cc-tile-compact:checked,
+.lintel-cc-tile.lintel-cc-sharing {
+    background-color: #ffffff;
+}
+
+.lintel-cc-tile.lintel-cc-tile-compact:checked .lintel-cc-tile-icon,
+.lintel-cc-tile.lintel-cc-sharing .lintel-cc-tile-icon {
+    color: #0a84ff;
+}
+
 .lintel-cc-tile-compact .lintel-cc-tile-box {
     spacing: 0;
 }
 
 .lintel-cc-tile-compact .lintel-cc-tile-icon,
 .lintel-cc-tile-compact .lintel-cc-tile-icon:checked {
-    icon-size: 22px;
+    icon-size: 28px;
     padding: 0;
     color: #ffffff;
     background-color: transparent;
@@ -551,21 +606,23 @@
 
 /* Labelled Display and Sound modules. */
 .lintel-cc-slider {
-    min-height: 48px;
+    min-height: 0;
     background-color: rgba(35, 41, 48, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 22px;
-    padding: 8px 10px 7px 10px;
+    padding: 10px 14px;
     spacing: 4px;
     box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.18);
 }
 
 .lintel-cc-slider-title {
     font-size: 9.25pt;
+    padding-top: 4px;
 }
 
 .lintel-cc-slider-row {
     spacing: 7px;
+    height: 24px;
 }
 
 .lintel-cc-slider-icon-button {
@@ -584,12 +641,12 @@
 }
 
 .lintel-cc-slider-icon {
-    icon-size: 13px;
+    icon-size: 17px;
     color: rgba(255, 255, 255, 0.94);
 }
 
 .lintel-cc-slider-trailing-icon {
-    icon-size: 16px;
+    icon-size: 20px;
     color: rgba(255, 255, 255, 0.94);
 }
 
@@ -797,7 +854,7 @@
 
 .lintel-notification-center {
     spacing: 8px;
-    font-family: "SF Pro Text", "Adwaita Sans", sans-serif;
+    font-family: "OPPO Sans 4.0";
     font-size: 9.75pt;
 }
 
@@ -1153,6 +1210,11 @@
 
 .lintel-nc-widget-large {
     height: 315px;
+}
+
+.lintel-nc-widget-large.lintel-nc-calendar-widget {
+    height: 0;
+    min-height: 0;
 }
 
 .lintel-nc-dark .lintel-nc-widget-card,
@@ -1967,4 +2029,99 @@
 
 .lintel-nc-light .lintel-nc-sparkline-network {
     -lintel-spark-primary: #28b446;
+}
+
+/* 系统界面统一使用用户指定的粗体。 */
+stage StLabel,
+stage StEntry {
+    font-family: "OPPO Sans 4.0" !important;
+    font-weight: 700 !important;
+}
+
+#panel.lintel .panel-button .lintel-active-app {
+    font-weight: 700;
+}
+
+.lintel-system-menu .lintel-system-menu-content {
+    background-color: rgba(30, 32, 36, 0.88);
+    color: rgba(255, 255, 255, 0.96);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.lintel-system-menu-content .popup-menu-item,
+.lintel-status-menu-content .lintel-battery-summary-icon,
+.lintel-status-menu-content .lintel-battery-summary-percentage {
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.lintel-status-menu-content .lintel-battery-summary-status {
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.lintel-status-menu-content .lintel-battery-summary-time,
+.lintel-status-menu-content .lintel-battery-source,
+.lintel-status-menu-content .lintel-battery-detail,
+.lintel-status-menu-content .lintel-battery-detail-value,
+.lintel-status-menu-content .lintel-status-section-title,
+.lintel-status-menu-content .lintel-status-empty,
+.lintel-status-menu-content .lintel-wifi-secure-icon {
+    color: rgba(255, 255, 255, 0.70);
+}
+
+.tpct-cascade-menu .lintel-system-menu-content {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+.lintel-system-menu .lintel-system-menu-content .popup-menu-icon,
+.lintel-system-menu .lintel-system-menu-content .popup-menu-arrow {
+    color: rgba(255, 255, 255, 0.94);
+}
+
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:insensitive .popup-menu-icon,
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:insensitive .popup-menu-arrow {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:insensitive {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:hover,
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:active,
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:focus,
+.lintel-system-menu .lintel-system-menu-content .popup-menu-item:checked {
+    color: rgba(255, 255, 255, 0.96);
+}
+
+/* 插入电源时的充电动画弹层；实时玻璃由 erhai-motion 绘制，没有玻璃时保留这层底色。 */
+.lintel-charge-toast {
+    padding: 28px 24px 24px 24px;
+    spacing: 2px;
+    border-radius: 36px;
+    background-color: rgba(30, 32, 36, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 18px 48px 0 rgba(0, 0, 0, 0.32);
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.lintel-charge-toast-percentage {
+    margin-top: 6px;
+    font-size: 30pt;
+    font-feature-settings: "tnum";
+}
+
+.lintel-charge-toast-tier {
+    margin-top: 10px;
+    padding: 4px 16px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.16);
+    font-size: 10pt;
+}
+
+.lintel-charge-toast-power {
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.70);
+    font-size: 11pt;
+    font-feature-settings: "tnum";
 }

@@ -1,25 +1,22 @@
-// Lintel — entry point.
-//
-// Design rule (see docs/ARCHITECTURE.md): we NEVER destroy or replace
-// Main.panel. This extension is a layout/compositor layer on top of the native
-// GNOME Panel. All mutation and full restoration lives in PanelController.
-//
-// GNOME 45+ uses ES modules. This file is intentionally tiny: it only wires the
-// controller's lifecycle to enable()/disable() and guarantees disable() fully
-// tears down (Criterion #2/#3: no logout, no leaked actors/signals/timeouts).
-
+// SPDX-License-Identifier: GPL-3.0-or-later
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {ErhaiPanelController} from './erhaiIntegration.js';
 
-import {PanelController} from './src/panelController.js';
-
-export default class LintelExtension extends Extension {
+export default class ErhaiMenuBar extends Extension {
     enable() {
-        this._controller = new PanelController(this);
+        this._controller = new ErhaiPanelController(this);
         this._controller.enable();
+        this._uiGroup = Main.layoutManager.uiGroup;
+        this._shutdownId = this._uiGroup.connect('destroy', () => this.disable());
     }
 
     disable() {
-        // disable() must be safe even if enable() partially failed.
+        if (this._shutdownId) {
+            this._uiGroup.disconnect(this._shutdownId);
+            this._shutdownId = 0;
+        }
+        this._uiGroup = null;
         this._controller?.destroy();
         this._controller = null;
     }

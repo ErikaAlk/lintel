@@ -14,6 +14,13 @@ import St from 'gi://St';
 import * as Slider from 'resource:///org/gnome/shell/ui/slider.js';
 
 import {_} from '../i18n.js';
+import {ControlIcon} from './controlIcons.js';
+
+const transportDirectory = Gio.File.new_for_uri(import.meta.url).get_parent().get_parent()
+    .get_parent().get_child('icons').get_child('transport');
+function transportIcon(name) {
+    return new Gio.FileIcon({file: transportDirectory.get_child(`${name}-symbolic.svg`)});
+}
 
 /** A horizontal network/focus capsule with a circular state icon. */
 export const CCTile = GObject.registerClass(
@@ -34,7 +41,7 @@ class CCTile extends St.Button {
             x_expand: true,
             x_align: Clutter.ActorAlign.FILL,
         });
-        this._icon = new St.Icon({
+        this._icon = new ControlIcon({
             icon_name: iconName,
             style_class: 'lintel-cc-tile-icon',
             y_align: Clutter.ActorAlign.CENTER,
@@ -42,7 +49,7 @@ class CCTile extends St.Button {
         // macOS Tahoe: icon on the left, title/status left-aligned right beside
         // it (not centred in the capsule).
         this._labels = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             x_expand: true,
             x_align: Clutter.ActorAlign.START,
             y_align: Clutter.ActorAlign.CENTER,
@@ -91,10 +98,11 @@ class CCTile extends St.Button {
         else
             this._icon.remove_style_pseudo_class('checked');
         this._status.text = statusText;
+        this._status.visible = statusText.length > 0;
     }
 
     setIcon(name) {
-        this._icon.icon_name = name;
+        this._icon.setSymbol(name);
     }
 
     /**
@@ -118,7 +126,7 @@ export const CCMediaCard = GObject.registerClass({
 class CCMediaCard extends St.BoxLayout {
     _init(styleClass = 'lintel-cc-media') {
         super._init({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style_class: styleClass,
             accessible_name: _('Now Playing'),
             x_expand: true,
@@ -129,7 +137,7 @@ class CCMediaCard extends St.BoxLayout {
             x_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._artwork = new St.Icon({
+        this._artwork = new ControlIcon({
             icon_name: 'audio-x-generic-symbolic',
             style_class: 'lintel-cc-media-artwork',
             x_align: Clutter.ActorAlign.START,
@@ -138,11 +146,12 @@ class CCMediaCard extends St.BoxLayout {
         header.add_child(this._artwork);
 
         const metadata = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style_class: 'lintel-cc-media-metadata',
             x_expand: true,
-            x_align: Clutter.ActorAlign.START,
-            y_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.FILL,
+            y_expand: true,
+            y_align: Clutter.ActorAlign.END,
         });
         this._title = new St.Label({
             text: _('Not Playing'),
@@ -159,8 +168,9 @@ class CCMediaCard extends St.BoxLayout {
         this._artist.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         metadata.add_child(this._title);
         metadata.add_child(this._artist);
-        header.add_child(metadata);
         this.add_child(header);
+        this.add_child(metadata);
+        this._buttons = new Map();
 
         const controls = new St.BoxLayout({
             style_class: 'lintel-cc-media-controls',
@@ -168,13 +178,13 @@ class CCMediaCard extends St.BoxLayout {
             x_align: Clutter.ActorAlign.FILL,
         });
         const actions = [
-            ['media-skip-backward-symbolic', _('Previous'), 'previous'],
-            ['media-playback-start-symbolic', _('Play'), 'play-pause'],
-            ['media-skip-forward-symbolic', _('Next'), 'next'],
+            ['backward', _('Previous'), 'previous'],
+            ['play', _('Play'), 'play-pause'],
+            ['forward', _('Next'), 'next'],
         ];
         for (const [name, label, signal] of actions) {
             const icon = new St.Icon({
-                icon_name: name,
+                gicon: transportIcon(name),
                 style_class: 'lintel-cc-media-control',
             });
             if (signal === 'play-pause')
@@ -189,33 +199,41 @@ class CCMediaCard extends St.BoxLayout {
                 child: icon,
             });
             button.connect('clicked', () => this.emit(signal));
+            this._buttons.set(signal, button);
             controls.add_child(button);
         }
         this.add_child(controls);
     }
 
-    setTrack(title, artist, artUrl, playing) {
+    setTrack(title, artist, artUrl, playing, capabilities = null) {
         this._title.text = title || _('Not Playing');
         // Read the argument, not the label back: an emptied St.Label reports
         // `text` as null, which threw here and aborted the rest of _sync().
         this._artist.text = artist || '';
         this._artist.visible = Boolean(artist);
-        this._playIcon.icon_name = playing
-            ? 'media-playback-pause-symbolic'
-            : 'media-playback-start-symbolic';
-
-        if (artUrl) {
-            try {
-                this._artwork.gicon = new Gio.FileIcon({
-                    file: Gio.File.new_for_uri(artUrl),
-                });
-                return;
-            } catch (_e) {
-                // Fall through to the neutral media glyph.
+        if (this._playing !== playing) {
+            this._playing = playing;
+            this._playIcon.gicon = transportIcon(playing ? 'pause' : 'play');
+        }
+        this._buttons.get('play-pause').accessible_name = playing ? _('Pause') : _('Play');
+        if (capabilities) {
+            for (const [signal, allowed] of Object.entries(capabilities)) {
+                const button = this._buttons.get(signal);
+                button.reactive = allowed;
+                button.can_focus = allowed;
+                button.opacity = allowed ? 255 : 90;
             }
         }
+
+        if (artUrl === this._artUrl)
+            return;
+        this._artUrl = artUrl;
+        if (artUrl) {
+            this._artwork.gicon = new Gio.FileIcon({file: Gio.File.new_for_uri(artUrl)});
+            return;
+        }
         this._artwork.gicon = null;
-        this._artwork.icon_name = 'audio-x-generic-symbolic';
+        this._artwork.setSymbol('audio-x-generic-symbolic');
     }
 });
 
@@ -228,11 +246,12 @@ export const CCSlider = GObject.registerClass({
     Signals: {
         'moved': {param_types: [GObject.TYPE_DOUBLE]},
         'icon-clicked': {},
+        'output-clicked': {},
     },
 }, class CCSlider extends St.BoxLayout {
     _init(title, iconName, trailingIconName = '', iconClickable = false) {
         super._init({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style_class: 'lintel-cc-slider',
             accessible_name: title,
             x_expand: true,
@@ -250,7 +269,7 @@ export const CCSlider = GObject.registerClass({
             x_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._icon = new St.Icon({
+        this._icon = new ControlIcon({
             icon_name: iconName,
             style_class: 'lintel-cc-slider-icon',
         });
@@ -275,10 +294,20 @@ export const CCSlider = GObject.registerClass({
         row.add_child(this._slider);
 
         if (trailingIconName) {
-            row.add_child(new St.Icon({
+            row.add_child(new ControlIcon({
                 icon_name: trailingIconName,
                 style_class: 'lintel-cc-slider-trailing-icon',
             }));
+        }
+        if (title === _('Sound')) {
+            this._outputButton = new St.Button({
+                style_class: 'lintel-cc-output-button',
+                accessible_name: '选择声音输出设备',
+                can_focus: true,
+                child: new St.Icon({icon_name: 'pan-up-symbolic', icon_size: 16}),
+            });
+            this._outputButton.connect('clicked', () => this.emit('output-clicked'));
+            row.add_child(this._outputButton);
         }
         this.add_child(row);
     }
@@ -290,7 +319,7 @@ export const CCSlider = GObject.registerClass({
     }
 
     setIcon(name) {
-        this._icon.icon_name = name;
+        this._icon.setSymbol(name);
     }
 
     setAvailable(available) {

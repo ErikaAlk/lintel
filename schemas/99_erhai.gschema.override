@@ -1,0 +1,9 @@
+[org.gnome.shell.extensions.lintel]
+system-menu-icon='start-here-symbolic'
+empty-app-label='桌面'
+panel-height=24
+font-family='OPPO Sans 4.0'
+font-weight='700'
+notification-center-widgets=['calendar']
+control-center-controls=['wifi', 'network', 'media', 'bluetooth', 'airdrop', 'focus', 'stage-manager', 'screen-mirroring', 'display', 'sound', 'dark-mode', 'screenshot']
+control-center-control-sizes={'bluetooth': 'small', 'airdrop': 'small'}

@@ -17,5 +17,6 @@ docs/audits/tahoe-reference/*.png
 *.swp
 *~
 .DS_Store
+/.build/
 
 .ai

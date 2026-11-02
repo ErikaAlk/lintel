@@ -54,6 +54,7 @@ import {
     CCTile,
 } from './ccTile.js';
 import {CCGrid} from './ccGrid.js';
+import {ControlIcon} from './controlIcons.js';
 
 const ORDER_KEY = 'control-center-controls';
 const SIZES_KEY = 'control-center-control-sizes';
@@ -67,15 +68,15 @@ const SIZES_KEY = 'control-center-control-sizes';
 // Only one of Wi-Fi and the wired network is ever available. Keep in step with
 // the schema defaults.
 const DEFAULT_ORDER = Object.freeze([
-    'wifi', 'network', 'media', 'bluetooth', 'airdrop', 'stage-manager',
-    'screen-mirroring', 'dark-mode', 'screenshot', 'focus', 'display', 'sound',
+    'wifi', 'network', 'media', 'bluetooth', 'airdrop', 'focus', 'stage-manager',
+    'screen-mirroring', 'display', 'sound', 'dark-mode', 'screenshot',
 ]);
 
 const DEFAULT_SIZES = Object.freeze({
     wifi: 'wide',
     network: 'wide',
-    bluetooth: 'wide',
-    airdrop: 'wide',
+    bluetooth: 'small',
+    airdrop: 'small',
     'stage-manager': 'small',
     'screen-mirroring': 'small',
     'dark-mode': 'small',
@@ -167,9 +168,16 @@ class ControlCenter extends PanelMenu.Button {
 
         // In Tahoe the Control Center glyph, Wi-Fi and battery are three
         // independent menu-bar items. PanelController owns the latter two.
-        this.add_child(_newControlCenterIcon());
+        this.add_child(new ControlIcon({icon_name: 'erhai-control-center',
+            style_class: 'system-status-icon'}));
 
         this._buildPopup();
+        for (const signal of ['stream-added', 'stream-removed', 'default-sink-changed'])
+            this._serviceIds.push([this._volume._control,
+                this._volume._control.connect(signal, () => {
+                    if (this._outputPage.visible)
+                        this._showOutputs();
+                })]);
 
         for (const svc of [this._volume, this._brightness, this._net, this._media,
             this._powerProfiles, this._qsBridge, this._adapters])
@@ -188,6 +196,8 @@ class ControlCenter extends PanelMenu.Button {
         this._openId = this.menu.connect('open-state-changed', (_m, open) => {
             if (!open) {
                 this._setEditing(false);
+                this._outputPage.hide();
+                this._content.show();
             } else {
                 this._brightness.refresh?.();
                 // Idempotent: re-attaches if Quick Settings was rebuilt (or was
@@ -206,7 +216,7 @@ class ControlCenter extends PanelMenu.Button {
         this.menu.box.add_style_class_name('lintel-cc-popup');
 
         const content = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style_class: 'lintel-cc-content',
         });
 
@@ -221,7 +231,8 @@ class ControlCenter extends PanelMenu.Button {
         // AirDrop is a launcher, not a toggle: the sharing app owns its own
         // visibility state, so the control must not latch when clicked.
         this._airDropTile = this._tile('network-transmit-receive-symbolic',
-            'AirDrop', () => this._openAirDrop(), false);
+            '附近共享', () => this._openAirDrop(), false);
+        this._airDropTile.add_style_class_name('lintel-cc-sharing');
         const stageManager = this._tile(
             'preferences-desktop-multitasking-symbolic', _('Stage Manager'),
             () => {
@@ -270,6 +281,7 @@ class ControlCenter extends PanelMenu.Button {
             'audio-volume-high-symbolic', true);
         this._volCard.connect('moved', (_c, v) => this._volume.setLevel(v));
         this._volCard.connect('icon-clicked', () => this._volume.toggleMute());
+        this._volCard.connect('output-clicked', () => this._showOutputs());
         this._micCard = new CCSlider(
             shellText('Microphone'), 'microphone-sensitivity-medium-symbolic',
             'microphone-sensitivity-high-symbolic', true);
@@ -284,7 +296,7 @@ class ControlCenter extends PanelMenu.Button {
             ['network', this._wiredTile, settingsText('Network'), wide],
             ['media', this._mediaCard, _('Now Playing'), ['large']],
             ['bluetooth', this._btTile, _('Bluetooth'), wide],
-            ['airdrop', this._airDropTile, 'AirDrop', wide],
+            ['airdrop', this._airDropTile, '附近共享', wide],
             ['stage-manager', stageManager, _('Stage Manager'), wide],
             ['screen-mirroring', mirroring, _('Screen Mirroring'), wide],
             ['dark-mode', this._darkTile, _('Dark Mode'), wide],
@@ -314,10 +326,12 @@ class ControlCenter extends PanelMenu.Button {
         this._grid = new CCGrid();
         content.add_child(this._grid);
         this._sliderBox = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style_class: 'lintel-cc-sliders',
         });
         content.add_child(this._sliderBox);
+        this._extraGrid = new CCGrid();
+        content.add_child(this._extraGrid);
         this._buildEditor(content);
 
         this._editButton = new St.Button({
@@ -332,6 +346,34 @@ class ControlCenter extends PanelMenu.Button {
         content.add_child(this._editButton);
 
         this.menu.box.add_child(content);
+        this._content = content;
+        this._outputPage = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
+            style_class: 'lintel-cc-output-page', visible: false});
+        this.menu.box.add_child(this._outputPage);
+    }
+
+    _showOutputs() {
+        this._outputPage.destroy_all_children();
+        const back = new St.Button({label: '‹ 声音', can_focus: true,
+            style_class: 'lintel-cc-output-back'});
+        back.connect('clicked', () => {
+            this._outputPage.hide();
+            this._content.show();
+        });
+        this._outputPage.add_child(back);
+        const mixer = this._volume._control;
+        const current = mixer.get_default_sink();
+        for (const sink of mixer.get_sinks()) {
+            const button = new St.Button({
+                label: `${sink === current ? '✓ ' : ''}${sink.get_description()}`,
+                can_focus: true, style_class: 'lintel-cc-output-device'});
+            button.connect('clicked', () => {
+                mixer.set_default_sink(sink);
+            });
+            this._outputPage.add_child(button);
+        }
+        this._content.hide();
+        this._outputPage.show();
     }
 
     _tile(iconName, title, onClick, toggleMode = true) {
@@ -415,7 +457,7 @@ class ControlCenter extends PanelMenu.Button {
         content.add_child(this._toolbar);
 
         this._gallery = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style_class: 'lintel-cc-gallery',
             visible: false,
         });
@@ -638,8 +680,18 @@ class ControlCenter extends PanelMenu.Button {
             ...order.map(id => this._controls.get(id)),
             ...[...this._controls.values()].filter(c => !listed.has(c.id)),
         ];
+        const signature = JSON.stringify(ordered.map(control =>
+            [control.id, listed.has(control.id), control.available, sizes[control.id]])
+            .concat(this._extensionOrder.map(key => [this._extensionTiles.get(key).visible])));
+        if (signature === this._layoutSignature
+            && this._layoutExtensionOrder?.length === this._extensionOrder.length
+            && this._extensionOrder.every((key, index) => key === this._layoutExtensionOrder[index]))
+            return;
+        this._layoutSignature = signature;
+        this._layoutExtensionOrder = [...this._extensionOrder];
 
         const grid = [];
+        const extras = [];
         let sliderIndex = 0;
         for (const control of ordered) {
             control.slot.visible = listed.has(control.id) && control.available;
@@ -665,13 +717,16 @@ class ControlCenter extends PanelMenu.Button {
                 else
                     control.shield.remove_style_class_name(`lintel-cc-shape-${shape}`);
             }
-            grid.push({actor: control.slot, shape: control.shape});
+            const target = ['wifi', 'network', 'media', 'bluetooth', 'airdrop', 'focus',
+                'stage-manager', 'screen-mirroring'].includes(control.id) ? grid : extras;
+            target.push({actor: control.slot, shape: control.shape});
         }
 
         // Mirrored third-party toggles follow the user's controls as capsules.
         for (const key of this._extensionOrder)
-            grid.push({actor: this._extensionTiles.get(key), shape: 'wide'});
+            extras.push({actor: this._extensionTiles.get(key), shape: 'wide'});
         this._grid.setModules(grid);
+        this._extraGrid.setModules(extras);
     }
 
     _airDropApp() {
@@ -768,7 +823,7 @@ class ControlCenter extends PanelMenu.Button {
             this._controls.get('screenshot').available = Boolean(Main.screenshotUI);
 
             this._mediaCard.setTrack(this._media.title, this._media.artist,
-                this._media.artUrl, this._media.playing);
+                this._media.artUrl, this._media.playing, this._media.capabilities);
 
             this._setCard('display', this._brightness.available,
                 this._brightness.level, 'display-brightness-symbolic');
