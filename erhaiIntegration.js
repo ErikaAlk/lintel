@@ -16,6 +16,7 @@ import {ErhaiAppMenus} from './erhaiMenus.js';
 import {ControlIcon, controlGIcon} from './src/widgets/controlIcons.js';
 import {CalendarButton, CalendarMenuRedirect} from './calendarMenuRedirect.js';
 import {centerCalendarNumbers} from './calendarLayout.js';
+import {_} from './src/i18n.js';
 
 const REPLACED_FIELDS = ['_network', '_system', '_volumeOutput', '_bluetooth'];
 
@@ -95,7 +96,7 @@ export class ErhaiPanelController extends PanelController {
         this._systemMenu._forceQuitFocused = () => this._confirmForceQuit();
         if (!this._systemMenu._erhaiCascade) {
             const menu = this._systemMenu.menu;
-            const recent = menu._getMenuItems().find(row => row.label?.text === '最近使用的项目');
+            const recent = menu._getMenuItems().find(row => row.label?.text === _('Recent Items'));
             const position = menu._getMenuItems().indexOf(recent);
             recent.destroy();
             const cascade = new CascadeController(menu);
@@ -115,7 +116,7 @@ export class ErhaiPanelController extends PanelController {
             menu.addMenuItem(row, position);
         }
         if (!Gio.AppInfo.get_default_for_uri_scheme('appstream')) {
-            const item = this._systemMenu.menu._getMenuItems().find(row => row.label?.text === '应用中心…');
+            const item = this._systemMenu.menu._getMenuItems().find(row => row.label?.text === _('App Center…'));
             item?.destroy();
         }
     }
